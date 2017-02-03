@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">RamzanTimeTable</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="GPSAlertDialogTitle">GPS</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="locationHeading">Your Current Location</string>
+    <string name="service_not_available">Service Not Available on Your Device</string>
+    <string name="invalid_lat_long_used">Invalid latitude and longitude</string>
+    <string name="no_address_found">No address found</string>
+    <string name="address_found">Address found</string>
+    // of Fajr, Sunrise,
+    // Dhuhr, Asr, Sunset,
+    // Maghrib, Isha
+    <string name="salahtimetabletitle">Salah Time Table</string>
+    <string name="fajr">Fajr</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="dhuhr">Dhuhr</string>
+    <string name="asr">Asr</string>
+    <string name="sunset">Sunset</string>
+    <string name="maghrib">Maghrib</string>
+    <string name="isha">Isha</string>
+</resources>

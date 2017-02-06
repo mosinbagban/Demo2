@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -35,24 +35,30 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/place_api_key"/>
+            android:value="@string/place_api_key" />
 
         <service
             android:name=".location.FetchAddressIntentService"
             android:exported="false" />
         <service
             android:name=".service.SalahSchedulingService"
-            android:exported="false"></service>
+            android:exported="false" />
         <service
             android:name=".service.SampleSchedulingService"
-            android:exported="false"></service>
-        <receiver android:name=".receiver.SalahAlarmReceiver"/>
-        <receiver android:name=".receiver.SalahBootReceiver"
+            android:exported="false" />
+
+        <receiver android:name=".receiver.SalahAlarmReceiver" />
+        <receiver
+            android:name=".receiver.SalahBootReceiver"
             android:enabled="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

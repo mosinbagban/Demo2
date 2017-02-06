@@ -24,4 +24,6 @@
     <string name="sunset">Sunset</string>
     <string name="maghrib">Maghrib</string>
     <string name="isha">Isha</string>
+    <string name="timezone_api_key">AIzaSyBcKEvJuXRuOOdjce8b-HcdzJ1XnOVm9Hc</string>
+    <string name="place_api_key">AIzaSyCuL0bzpwWUgxAtM91VSQFHTlpdVSDzXFo</string>
 </resources>

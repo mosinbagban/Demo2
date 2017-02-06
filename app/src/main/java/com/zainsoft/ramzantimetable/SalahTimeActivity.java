@@ -23,6 +23,9 @@ import android.widget.TextView;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -202,12 +205,8 @@ public class SalahTimeActivity extends AppCompatActivity
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "OnActivityResult ");
-        if (requestCode == LocationDetailFragment.REQUEST_CHECK_SETTINGS){
-            lfrg.onActivityResult(requestCode, resultCode, data);
-        }
-        else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
+            Log.d(TAG, "OnActivityResult " + requestCode+ " : " + resultCode);
+            lfrg.onActivityResult(requestCode,resultCode,data);
+            super.onActivityResult(requestCode,resultCode,data );
     }
 }

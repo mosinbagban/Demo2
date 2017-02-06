@@ -33,6 +33,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -45,10 +47,17 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.zainsoft.ramzantimetable.location.FetchAddressIntentService;
 import com.zainsoft.ramzantimetable.util.Constants;
 import com.zainsoft.ramzantimetable.util.Utility;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -87,16 +96,20 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     String lat,lon;
-    double latitude, longitude,timezone;
+    double latitude;
+    double longitude;
+    double timezone;
     Activity mActivity;
     public static final int INTERVAL = 10000;
     public static final int REQUEST_CHECK_SETTINGS = 0x1;
+    public static  final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 50;
 
     private OnFragmentInteractionListener mListener;
     private String mAddressOutput;
     private AddressResultReceiver mResultReceiver;
     private Handler mHandler;
     private ProgressDialog pDialog;
+    private PrayTime prayers;
 
     public LocationDetailFragment() {
         // Required empty public constructor
@@ -179,7 +192,8 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
             pDialog.show();
             buildGoogleApiClient();
             setLocationRequest();
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, LocationDetailFragment.this);
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
+                    mLocationRequest, LocationDetailFragment.this);
             super.onPreExecute();
         }
 
@@ -236,27 +250,28 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     }
 
     private void checkPermissions() {
-        String permissions[] = {android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+        String permissions[] = {android.Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION};
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (String permission : permissions) {
-                if (ContextCompat.checkSelfPermission(getActivity(),permission)!= PackageManager.PERMISSION_GRANTED)
+                if (ContextCompat.checkSelfPermission(getActivity(),
+                        permission)!= PackageManager.PERMISSION_GRANTED)
                     requestLocationPermission(permissions);
                 else
                     settingsRequest();
             }
         } else
             settingsRequest();
-
     }
 
-
-
     private void requestLocationPermission(String[] permissions) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-            ActivityCompat.requestPermissions(getActivity(),permissions, ACCESS_FINE_LOCATION_INTENT_ID);
-
+        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            ActivityCompat.requestPermissions(getActivity(),permissions,
+                    ACCESS_FINE_LOCATION_INTENT_ID);
         } else {
-            ActivityCompat.requestPermissions(getActivity(),permissions, ACCESS_FINE_LOCATION_INTENT_ID);
+            ActivityCompat.requestPermissions(getActivity(),permissions,
+                    ACCESS_FINE_LOCATION_INTENT_ID);
         }
     }
 
@@ -299,8 +314,21 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         removeLocationUpdate();
         txtOutputLat.setText(lat);
         txtOutputLon.setText(lon);
+        TimeZone tz = TimeZone.getDefault();
+        Log.d(TAG, "TimeZone: " + tz.getDisplayName(false, TimeZone.SHORT) + " : "
+                + tz.getID() + " : "+ tz.getRawOffset());
+
+        timezone = getTimeZoneVal(tz);
+        Log.d(TAG, "tz"+ timezone);
         startIntentService();
-        getSalahTime();
+        double[] pTimes = getSalahTime( timezone );
+        ArrayList<String> prayerNames = prayers.getTimeNames();
+        SalahAdapter salahAdapter = new SalahAdapter(getActivity(),pTimes, prayerNames);
+        lstSalah.setAdapter(salahAdapter);
+        if (pDialog != null) {
+            pDialog.dismiss();
+            pDialog = null;
+        }
     }
 
     @Override
@@ -328,6 +356,94 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         }
     }
 
+    private void searchLocation() {
+        try {
+            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                            .build(getActivity());
+            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
+        }
+    }
+
+    private void getPlaces(Intent data) {
+        final Place place = PlaceAutocomplete.getPlace(getActivity(), data);
+        Log.i(TAG, "Place: " + place.getName());
+        Log.d( TAG, "Places :" + place.getLatLng().toString() );
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                displayAddressOutput(place.getName().toString());
+            }
+        });
+
+        new GetSalahTimeTasker().execute( place );
+
+    }
+
+    public class GetSalahTimeTasker extends AsyncTask<Place, Void, double[]> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if(pDialog == null) {
+                pDialog = new ProgressDialog(getActivity());
+                pDialog.setMessage("Getting Salah Time...");
+            }
+            pDialog.show();
+        }
+
+        @Override
+        protected double[] doInBackground(Place[] place) {
+            double [] prayerTimes = new double[0];
+            if(place[0] != null) {
+                 latitude = place[0].getLatLng().latitude;
+                 longitude = place[0].getLatLng().longitude;
+                Long tsLong = System.currentTimeMillis()/1000;
+                String ts = tsLong.toString();
+                String url = "https://maps.googleapis.com/maps/api/timezone/json?location"+
+                        "=" +latitude +"," +longitude + "&timestamp="+ts + "&key="+ getString(R.string.timezone_api_key);
+                Log.d( TAG, "Url: " + url );
+                String resp = Utility.getRequest(url);
+                if(resp != null) {
+                   /* {
+                        "dstOffset" : 0,
+                            "rawOffset" : -28800,
+                            "status" : "OK",
+                            "timeZoneId" : "America/Los_Angeles",
+                            "timeZoneName" : "Pacific Standard Time"
+                    }*/
+                    Log.d( TAG, "Resp: " + resp );
+                    try {
+                        JSONObject jObj = new JSONObject( resp );
+                        long rawOffset = jObj.getLong( "rawOffset" );
+                        String id = jObj.getString( "timeZoneId" );
+                        TimeZone tz = TimeZone.getTimeZone( id );
+                        timezone = getTimeZoneVal( tz );
+                         prayerTimes = getSalahTime(timezone);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return prayerTimes;
+        }
+
+        @Override
+        protected void onPostExecute(double[] pTimes) {
+            super.onPostExecute( pTimes );
+            if(pDialog != null) {
+                pDialog.dismiss();
+            }
+            ArrayList<String> prayerNames = prayers.getTimeNames();
+            SalahAdapter salahAdapter = new SalahAdapter(getActivity(),pTimes, prayerNames);
+            lstSalah.setAdapter(salahAdapter);
+        }
+    }
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
             buildGoogleApiClient();
@@ -346,6 +462,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                 .setNegativeButton("Search Location", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Utility.showToast(getActivity(), "Search Location");
+                        searchLocation();
                     }
                 });
         AlertDialog alert = builder.create();
@@ -374,18 +491,17 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
             // Display the address string
             // or an error message sent from the intent service.
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
-            final Address address = (Address) resultData.getParcelable(Constants.RESULT_ADDRESS_KEY);
+            final Address address = (Address)resultData.getParcelable(Constants.RESULT_ADDRESS_KEY);
             if(address != null &&  address.getLocality()!= null ) {
                 Log.d(TAG, "Current City: " + address.getLocality());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        displayAddressOutput(address);
+                        String str = address.getLocality() + ", " + address.getCountryName();
+                        displayAddressOutput(str);
                     }
                 });
             }
-
-
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
                // showToast(getString(R.string.address_found));
@@ -395,9 +511,9 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         }
     }
 
-    private void displayAddressOutput(Address address) {
-        Log.d(TAG, "Address: " + mAddressOutput);
-        txtCity.setText(address.getLocality() + ", " + address.getCountryName());
+    private void displayAddressOutput(String address) {
+       // Log.d(TAG, "Address: " + mAddressOutput);
+        txtCity.setText(address);
     }
 
     protected void startIntentService() {
@@ -428,9 +544,9 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         void onFragmentInteraction(Uri uri);
     }
 
-    private void getSalahTime() {
+    private double[] getSalahTime(double timeZone) {
         Log.d(TAG, "Getting Salah Time");
-        PrayTime prayers = new PrayTime();
+        prayers = new PrayTime();
         prayers.setTimeFormat(prayers.Time24);
         prayers.setCalcMethod(prayers.Jafari);
         prayers.setAsrJuristic(prayers.Shafii);
@@ -441,19 +557,10 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         Date now = new Date();
         Calendar cal = Calendar.getInstance();
         cal.setTime(now);
-        TimeZone tz = TimeZone.getDefault();
-        Log.d(TAG, "TimeZone: " + tz.getDisplayName(false, TimeZone.SHORT) + " : " + tz.getID() + " : "+ tz.getRawOffset());
 
-        timezone = getTimeZoneVal(tz);
-        Log.d(TAG, "tz"+ timezone);
-        double[] prayerTimes = prayers.getPrayerTimes(cal,latitude, longitude, timezone);
-        ArrayList<String> prayerNames = prayers.getTimeNames();
+        double[] prayerTimes = prayers.getPrayerTimes(cal,latitude, longitude, timeZone);
 
-        SalahAdapter salahAdapter = new SalahAdapter(getActivity(),prayerTimes, prayerNames);
-        lstSalah.setAdapter(salahAdapter);
-        if(pDialog != null) {
-            pDialog.dismiss();
-        }
+        return prayerTimes;
     }
 
     private static double getTimeZoneVal(TimeZone tz) {
@@ -492,17 +599,19 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                     case LocationSettingsStatusCodes.SUCCESS:
                         // All location settings are satisfied. The client can initialize location
                         // requests here.
-                        Log.d(TAG, "All location settings are satisfied. The client can initialize location requests here.");
+                        Log.d(TAG, "All location settings are satisfied. The client can " +
+                                "initialize location requests here.");
                        new LocationTasker().execute();
                        // buildGoogleApiClient();
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        // Location settings are not satisfied. But could be fixed by showing the user
-                        // a dialog.
+                        // Location settings are not satisfied. But could be fixed by
+                        // showing the user a dialog.
                         try {
                             // Show the dialog by calling startResolutionForResult(),
                             // and check the result in onActivityResult().
-                            Log.d(TAG, "Show the dialog by calling startResolutionForResult(), and check the result in onActivityResult().");
+                            Log.d(TAG, "Show the dialog by calling startResolutionForResult()," +
+                                    " and check the result in onActivityResult().");
                             status.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
                         } catch (IntentSender.SendIntentException e) {
                             // Ignore the error.
@@ -511,7 +620,8 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                         // Location settings are not satisfied. However, we have no way to fix the
                         // settings so we won't show the dialog.
-                        Log.d(TAG, "Location settings are not satisfied. However, we have no way to fix the settings so we won't show the dialog.");
+                        Log.d(TAG, "Location settings are not satisfied. However, we have no way" +
+                                " to fix the settings so we won't show the dialog.");
                         break;
                 }
             }
@@ -521,21 +631,35 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d("onActivityResult()", Integer.toString(resultCode));
-        switch (requestCode) {
-// Check for the integer request code originally supplied to startResolutionForResult().
-            case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         Log.d(TAG, "Received Result OK");
-                        new LocationTasker().execute();
+                        if (requestCode == LocationDetailFragment.PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+                            getPlaces(data);
+                            //Log.i(TAG, "Place: " + place.getName());
+                        }else if (requestCode == LocationDetailFragment.REQUEST_CHECK_SETTINGS){
+                            new LocationTasker().execute();;
+                        }
+
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.d(TAG, "Received Cancel Request");
-                       // settingsRequest();//keep asking if imp or do whatever
-                        Toast.makeText(getActivity(), "Location setting is disabled, to get Salah time for your location please enable it.", Toast.LENGTH_LONG).show();
+                        if (requestCode == LocationDetailFragment.PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+                            Status status = PlaceAutocomplete.getStatus(getActivity(), data);
+                            // TODO: Handle the error.
+                            Toast.makeText(getActivity(), "Could not find your location please " +
+                                    "try again.", Toast.LENGTH_LONG).show();
+                            if(status.getStatusMessage() != null)
+                                Log.i(TAG, status.getStatusMessage());
+
+                        }else if (requestCode == LocationDetailFragment.REQUEST_CHECK_SETTINGS){
+                            Toast.makeText(getActivity(), "Location setting is disabled, to get " +
+                                    "Salah time for your location please enable it.",
+                                    Toast.LENGTH_LONG).show();
+                        }
+
                         break;
                 }
-                break;
-        }
+
     }
 }

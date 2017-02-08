@@ -10,11 +10,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +35,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class SalahTimeActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, LocationDetailFragment.OnFragmentInteractionListener{
+        implements NavigationView.OnNavigationItemSelectedListener, LocationDetailFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "SalahTimeActivity";
     double latitude;
@@ -44,6 +47,7 @@ public class SalahTimeActivity extends AppCompatActivity
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     LocationDetailFragment lfrg;
+  //  private ShareActionProvider myShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +84,7 @@ public class SalahTimeActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -91,6 +96,9 @@ public class SalahTimeActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.salah_time, menu);
+       // MenuItem shareItem = menu.findItem(R.id.action_share);
+       /* myShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        myShareActionProvider.setOnShareTargetSelectedListener( this );*/
         return true;
     }
 
@@ -100,11 +108,23 @@ public class SalahTimeActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        Log.d( TAG, "Options clicked..." );
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             Intent intent = new Intent( getApplicationContext(), SettingsActivity.class );
             startActivity( intent );
+            return true;
+        }else if (id == R.id.action_share) {
+            if(lfrg.MSG_SHARING_STR != null) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, lfrg.ADDRESS + " "+ lfrg.MSG_SHARING_STR);
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+            } else {
+
+            }
+
             return true;
         }
 
@@ -136,6 +156,10 @@ public class SalahTimeActivity extends AppCompatActivity
         return true;
     }
 
+    public void doShare(Intent shareIntent) {
+        // When you want to share set the share intent.
+//        myShareActionProvider.setShareIntent(shareIntent);
+    }
     private void getSalahTime() {
 
         PrayTime prayers = new PrayTime();
@@ -211,4 +235,15 @@ public class SalahTimeActivity extends AppCompatActivity
             lfrg.onActivityResult(requestCode,resultCode,data);
             super.onActivityResult(requestCode,resultCode,data );
     }
+
+   /* @Override
+    public boolean onShareTargetSelected(ShareActionProvider source, Intent intent) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+        sendIntent.setType("text/plain");
+        Log.d( TAG, "Sharing...." );
+        doShare(sendIntent  );
+        return false;
+    }*/
 }

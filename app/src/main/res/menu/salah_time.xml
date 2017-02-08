@@ -5,5 +5,11 @@
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:icon="@android:drawable/ic_menu_set_as" />
+    <item
+        android:id="@+id/action_share"
+        android:title="@string/share"
+        app:showAsAction="never"
+        android:icon="@android:drawable/ic_menu_send" />
 </menu>

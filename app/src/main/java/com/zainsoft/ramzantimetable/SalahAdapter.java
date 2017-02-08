@@ -22,7 +22,7 @@ public class SalahAdapter extends BaseAdapter {
 
     private static final String TAG = "SalahAdapter";
     double[] pTimes;
-    ArrayList<String> prayerTimes;
+    public ArrayList<String> prayerTimes;
     ArrayList<String> prayerNames;
     Context mContext;
     private static LayoutInflater inflater = null;

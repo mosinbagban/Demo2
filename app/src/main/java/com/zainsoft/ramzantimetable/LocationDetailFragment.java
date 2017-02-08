@@ -110,7 +110,8 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     private Handler mHandler;
     private ProgressDialog pDialog;
     private PrayTime prayers;
-
+    public static String MSG_SHARING_STR;
+    public static String ADDRESS = "";
     public LocationDetailFragment() {
         // Required empty public constructor
     }
@@ -322,9 +323,20 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         Log.d(TAG, "tz"+ timezone);
         startIntentService();
         double[] pTimes = getSalahTime( timezone );
+        setSalahToAdapter( pTimes );
+    }
+
+    private void setSalahToAdapter(double[] pTimes) {
         ArrayList<String> prayerNames = prayers.getTimeNames();
         SalahAdapter salahAdapter = new SalahAdapter(getActivity(),pTimes, prayerNames);
         lstSalah.setAdapter(salahAdapter);
+
+        MSG_SHARING_STR = "Prayer times ";
+        for(int i=0; i < prayerNames.size(); i++) {
+            MSG_SHARING_STR = MSG_SHARING_STR  +" " + prayerNames.get( i ) + "-"
+                    + salahAdapter.prayerTimes.get( i ) +" ";
+        }
+        Log.d( TAG, MSG_SHARING_STR );
         if (pDialog != null) {
             pDialog.dismiss();
             pDialog = null;
@@ -435,12 +447,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         @Override
         protected void onPostExecute(double[] pTimes) {
             super.onPostExecute( pTimes );
-            if(pDialog != null) {
-                pDialog.dismiss();
-            }
-            ArrayList<String> prayerNames = prayers.getTimeNames();
-            SalahAdapter salahAdapter = new SalahAdapter(getActivity(),pTimes, prayerNames);
-            lstSalah.setAdapter(salahAdapter);
+           setSalahToAdapter( pTimes );
         }
     }
 
@@ -512,7 +519,9 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     }
 
     private void displayAddressOutput(String address) {
-       // Log.d(TAG, "Address: " + mAddressOutput);
+        this.ADDRESS = address;
+        Log.d(TAG, "Address: " + MSG_SHARING_STR);
+
         txtCity.setText(address);
     }
 

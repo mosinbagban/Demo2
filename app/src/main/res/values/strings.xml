@@ -27,6 +27,7 @@
     <string name="timezone_api_key">AIzaSyBcKEvJuXRuOOdjce8b-HcdzJ1XnOVm9Hc</string>
     <string name="place_api_key">AIzaSyCuL0bzpwWUgxAtM91VSQFHTlpdVSDzXFo</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="share">Share Timing</string>
 
     <!-- Strings related to Settings -->
 

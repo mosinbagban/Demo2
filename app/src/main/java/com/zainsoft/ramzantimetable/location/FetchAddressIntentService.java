@@ -103,7 +103,7 @@ public class FetchAddressIntentService extends IntentService {
             mReceiver = (ResultReceiver) intent.getExtras().get(Constants.RECEIVER);
         // Get the location passed to this service through an extra.
             Location location = (Location) intent.getExtras().get(Constants.LOCATION_DATA_EXTRA);
-            Log.d(TAG, "Getting timezone");
+            //Log.d(TAG, "Getting timezone");
 //            String timeZone = TimezoneMapper.latLngToTimezoneString(location.getLatitude(), location.getLongitude());
           //  String timeone;
             //Calendar calendar = new GregorianCalendar();

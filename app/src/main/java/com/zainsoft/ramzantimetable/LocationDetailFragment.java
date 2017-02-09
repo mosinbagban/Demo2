@@ -51,12 +51,14 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.zainsoft.ramzantimetable.location.FetchAddressIntentService;
+import com.zainsoft.ramzantimetable.network.NetworkConnector;
 import com.zainsoft.ramzantimetable.util.Constants;
 import com.zainsoft.ramzantimetable.util.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.security.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -418,7 +420,13 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                 String url = "https://maps.googleapis.com/maps/api/timezone/json?location"+
                         "=" +latitude +"," +longitude + "&timestamp="+ts + "&key="+ getString(R.string.timezone_api_key);
                 Log.d( TAG, "Url: " + url );
-                String resp = Utility.getRequest(url);
+                //String resp = Utility.getRequest(url);
+                String resp = null;
+                try {
+                   resp = NetworkConnector.get( url );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 if(resp != null) {
                    /* {
                         "dstOffset" : 0,

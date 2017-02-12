@@ -85,6 +85,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 // simple string representation.
                 Log.d( TAG, "Key: " + preference.getKey());
                 Log.d(TAG, "Value: " + stringValue);
+                if(preference.getKey().equals( "" )) {
+                    
+                    preference.onParentChanged( preference, true );
+                }
                 preference.setSummary( stringValue );
             }
             return true;
@@ -119,6 +123,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 PreferenceManager
                         .getDefaultSharedPreferences( preference.getContext() )
                         .getString( preference.getKey(), "" ) );
+    }
+
+    private static void bindPreferenceSwitchToValue(Preference preference) {
+        // Set the listener to watch for value changes.
+        preference.setOnPreferenceChangeListener( sBindPreferenceSummaryToValueListener );
+
+        // Trigger the listener immediately with the preference's
+        // current value.
+        sBindPreferenceSummaryToValueListener.onPreferenceChange( preference,
+                PreferenceManager
+                        .getDefaultSharedPreferences( preference.getContext() )
+                        .getBoolean( preference.getKey(), false ) );
     }
 
     @Override
@@ -214,7 +230,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue( findPreference( "notifications_new_message_ringtone" ) );
+            bindPreferenceSummaryToValue( findPreference( "notifications_salah_message_ringtone" ) );
+            bindPreferenceSwitchToValue( findPreference( "notifications_salah_default" ) );
+
         }
 
         @Override

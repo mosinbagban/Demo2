@@ -2,8 +2,10 @@ package com.zainsoft.ramzantimetable;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -47,7 +49,9 @@ public class SalahTimeActivity extends AppCompatActivity
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     LocationDetailFragment lfrg;
-  //  private ShareActionProvider myShareActionProvider;
+    private SharedPreferences perfs;
+    //  private ShareActionProvider myShareActionProvider;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,10 @@ public class SalahTimeActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+        perfs = PreferenceManager.getDefaultSharedPreferences(SalahTimeActivity.this);
+        Boolean example_switch = perfs.getBoolean( "notifications_salah_message", false );
+        Log.d( TAG, "notifications_salah_message: " + example_switch );
+        String gpsPerfKey = getString(R.string.gps_pref_key);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -139,6 +147,8 @@ public class SalahTimeActivity extends AppCompatActivity
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
+            Intent intent = new Intent( getApplicationContext(), QiblaActivity.class );
+            startActivity( intent );
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {

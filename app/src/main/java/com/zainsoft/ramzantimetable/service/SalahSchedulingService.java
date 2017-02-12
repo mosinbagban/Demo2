@@ -77,7 +77,7 @@ public class SalahSchedulingService extends IntentService {
             String city = intent.getExtras().getString("city");
             Log.d(TAG, "PryaerName: " + prayerName + " City: " + city);
             sendNotification(prayerName, city);
-            createNotification(SalahSchedulingService.this, prayerName, "Its " + prayerName + " time started in " + city, "Its " + prayerName + " time started in " + city);
+          //  createNotification(SalahSchedulingService.this, prayerName, "Its " + prayerName + " time started in " + city, "Its " + prayerName + " time started in " + city);
             // Release the wake lock provided by the BroadcastReceiver.
             SalahAlarmReceiver.completeWakefulIntent(intent);
             // END_INCLUDE(service_onhandle)

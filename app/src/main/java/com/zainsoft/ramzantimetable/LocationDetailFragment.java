@@ -1,9 +1,9 @@
 package com.zainsoft.ramzantimetable;
 
-import android.app.NotificationManager;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -51,14 +51,15 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.zainsoft.ramzantimetable.location.FetchAddressIntentService;
 import com.zainsoft.ramzantimetable.network.NetworkConnector;
+import com.zainsoft.ramzantimetable.util.AlertDialogManager;
 import com.zainsoft.ramzantimetable.util.Constants;
+import com.zainsoft.ramzantimetable.util.DevicePrefernces;
 import com.zainsoft.ramzantimetable.util.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import com.zainsoft.ramzantimetable.util.DevicePrefernces;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;

@@ -16,9 +16,11 @@ public class DevicePrefernces {
     private static  final String USER_ADDRESS = "user_address";
     private static  final String USER_LATITUDE = "user_latitude";
     private static  final String USER_LONGITUDE = "user_longitude";
+    private static final String USER_TIMEZONE = "user_timezone";
     private String address;
     private String latitude;
     private String longitude;
+    private String timezone;
 
     public DevicePrefernces(Context context) {
         this.mContext = context;
@@ -55,6 +57,15 @@ public class DevicePrefernces {
 
     public void setLongitude(String longitude) {
         editor.putString(USER_LONGITUDE, longitude);
+        editor.commit();
+    }
+
+    public String getTimezone() {
+        return sharedPref.getString( USER_TIMEZONE, null );
+    }
+
+    public void setTimezone(String timezone) {
+        editor.putString(USER_TIMEZONE, timezone);
         editor.commit();
     }
 }

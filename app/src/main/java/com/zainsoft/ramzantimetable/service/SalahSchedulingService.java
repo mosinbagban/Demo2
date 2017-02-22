@@ -14,6 +14,7 @@ import android.util.Log;
 import com.zainsoft.ramzantimetable.R;
 import com.zainsoft.ramzantimetable.SalahTimeActivity;
 import com.zainsoft.ramzantimetable.receiver.SalahAlarmReceiver;
+import com.zainsoft.ramzantimetable.util.Constants;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -33,7 +34,7 @@ public class SalahSchedulingService extends IntentService {
     private static final String EXTRA_PARAM2 = "com.zainsoft.ramzantimetable.service.extra.PARAM2";
     private static final String TAG = "SalahSchedulingService";
     private NotificationManager mNotificationManager;
-    public static final int NOTIFICATION_ID = 1;
+
 
     public SalahSchedulingService() {
         super("SalahSchedulingService");
@@ -100,7 +101,7 @@ public class SalahSchedulingService extends IntentService {
                         .setContentText("Its " + prayerName + " time started in " + city);
 
         mBuilder.setContentIntent(contentIntent);
-        mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
+        mNotificationManager.notify( Constants.NOTIFICATION_ID, mBuilder.build());
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

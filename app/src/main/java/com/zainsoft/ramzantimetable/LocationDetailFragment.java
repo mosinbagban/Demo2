@@ -1,6 +1,6 @@
 package com.zainsoft.ramzantimetable;
 
-import android.*;
+import android.app.NotificationManager;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +58,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.security.Timestamp;
+import com.zainsoft.ramzantimetable.util.DevicePrefernces;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -97,10 +96,10 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    String lat,lon;
+  /*  String lat,lon;
     double latitude;
     double longitude;
-    double timezone;
+    double timezone;*/
     Activity mActivity;
     public static final int INTERVAL = 10000;
     public static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -114,6 +113,9 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     private PrayTime prayers;
     public static String MSG_SHARING_STR;
     public static String ADDRESS = "";
+    private DevicePrefernces pref;
+    private NotificationManager mNotificationManager;
+
     public LocationDetailFragment() {
         // Required empty public constructor
     }
@@ -143,6 +145,10 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        pref = new DevicePrefernces( getActivity() );
+        mNotificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel( Constants.NOTIFICATION_ID );
+
       //  new LocationTasker().execute();
        // buildGoogleApiClient();
     }
@@ -159,6 +165,20 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         btnLocateMe = (Button) rootView.findViewById(R.id.btnLocateMe);
         btnLocateMe.setOnClickListener(this);
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated( savedInstanceState );
+        if(pref.getLatitude()!= null || pref.getLongitude()!= null || pref.getTimezone()!= null) {
+            double lat = Double.valueOf( pref.getLatitude() );
+            double lon = Double.valueOf( pref.getLongitude() );
+            double tz = Double.valueOf( pref.getTimezone() );
+            updateUI( lat,lon,tz );
+
+        } else {
+            settingsRequest();
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -212,11 +232,17 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
            super.onPostExecute(loc);
            if(loc != null) {
                mLastLocation = loc;
-               latitude = mLastLocation.getLatitude();
-               longitude = mLastLocation.getLongitude();
-               lat = String.valueOf(latitude);
-               lon = String.valueOf(longitude);
-               updateUI();
+               double latitude = mLastLocation.getLatitude();
+               double longitude = mLastLocation.getLongitude();
+               String lat = String.valueOf( latitude );
+               String lon = String.valueOf( longitude );
+               TimeZone tz = TimeZone.getDefault();
+               Log.d(TAG, "TimeZone: " + tz.getDisplayName(false, TimeZone.SHORT) + " : "
+                       + tz.getID() + " : "+ tz.getRawOffset());
+
+               double timezone = getTimeZoneVal( tz );
+               Log.d(TAG, "tz"+ timezone);
+               updateUI( latitude,longitude ,timezone );
            } else {
                Log.d(TAG, "Location not found");
            }
@@ -312,19 +338,21 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
 
     }
 
-    private void updateUI() {
+    private void updateUI(Double lat, Double lon, double timezone) {
         Log.d(TAG, "Location received, Updating UI, remove location update to save battery");
         removeLocationUpdate();
-        txtOutputLat.setText(lat);
-        txtOutputLon.setText(lon);
-        TimeZone tz = TimeZone.getDefault();
-        Log.d(TAG, "TimeZone: " + tz.getDisplayName(false, TimeZone.SHORT) + " : "
-                + tz.getID() + " : "+ tz.getRawOffset());
+      //  txtOutputLat.setText(lat);
+      //  txtOutputLon.setText(lon);
+        pref.setLatitude(Double.toString( lat ));
+        pref.setLongitude(Double.toString( lon ));
+        pref.setTimezone( Double.toString( timezone ));
+        if(mLastLocation != null)
+            startIntentService();
 
-        timezone = getTimeZoneVal(tz);
-        Log.d(TAG, "tz"+ timezone);
-        startIntentService();
-        double[] pTimes = getSalahTime( timezone );
+        if(pref.getAddress() != null)
+            txtCity.setText( pref.getAddress() );
+
+        double[] pTimes = getSalahTime( timezone,lat ,lon );
         setSalahToAdapter( pTimes );
     }
 
@@ -356,11 +384,17 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         mLastLocation = location;
         if(location != null) {
             Log.d(TAG, "Location received");
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
-            lat = String.valueOf(latitude);
-            lon = String.valueOf(longitude);
-            updateUI();
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+            String lat = String.valueOf( latitude );
+            String lon = String.valueOf( longitude );
+            TimeZone tz = TimeZone.getDefault();
+            Log.d(TAG, "TimeZone: " + tz.getDisplayName(false, TimeZone.SHORT) + " : "
+                    + tz.getID() + " : "+ tz.getRawOffset());
+
+            double timezone = getTimeZoneVal( tz );
+            Log.d(TAG, "tz"+ timezone);
+            updateUI( latitude, longitude,timezone );
         } else {
             Log.d(TAG, "mLastLocation is null");
             if(pDialog != null) {
@@ -413,8 +447,8 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         protected double[] doInBackground(Place[] place) {
             double [] prayerTimes = new double[0];
             if(place[0] != null) {
-                 latitude = place[0].getLatLng().latitude;
-                 longitude = place[0].getLatLng().longitude;
+                double latitude = place[0].getLatLng().latitude;
+                double longitude = place[0].getLatLng().longitude;
                 Long tsLong = System.currentTimeMillis()/1000;
                 String ts = tsLong.toString();
                 String url = "https://maps.googleapis.com/maps/api/timezone/json?location"+
@@ -441,8 +475,11 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                         long rawOffset = jObj.getLong( "rawOffset" );
                         String id = jObj.getString( "timeZoneId" );
                         TimeZone tz = TimeZone.getTimeZone( id );
-                        timezone = getTimeZoneVal( tz );
-                         prayerTimes = getSalahTime(timezone);
+                        double timezone = getTimeZoneVal( tz );
+                        pref.setLatitude( Double.toString( latitude ) );
+                        pref.setLongitude( Double.toString( longitude ) );
+                        pref.setTimezone( Double.toString( timezone ) );
+                        prayerTimes = getSalahTime(timezone,latitude ,longitude );
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -529,7 +566,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     private void displayAddressOutput(String address) {
         this.ADDRESS = address;
         Log.d(TAG, "Address: " + MSG_SHARING_STR);
-
+        pref.setAddress( address );
         txtCity.setText(address);
     }
 
@@ -561,7 +598,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         void onFragmentInteraction(Uri uri);
     }
 
-    private double[] getSalahTime(double timeZone) {
+    private double[] getSalahTime(double timeZone, double latitude, double longitude) {
         Log.d(TAG, "Getting Salah Time");
         prayers = new PrayTime();
         prayers.setTimeFormat(prayers.Time24);

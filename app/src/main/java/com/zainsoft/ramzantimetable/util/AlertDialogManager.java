@@ -20,7 +20,7 @@ public class AlertDialogManager {
      * */
     public void showAlertDialog(Context context, String title, String message,
                                 Boolean status) {
-        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
 
         // Setting Dialog Title
         alertDialog.setTitle(title);
@@ -32,6 +32,7 @@ public class AlertDialogManager {
         // Setting OK Button
         alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,"OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+                alertDialog.dismiss();
             }
         });
 

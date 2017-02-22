@@ -86,7 +86,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 Log.d( TAG, "Key: " + preference.getKey());
                 Log.d(TAG, "Value: " + stringValue);
                 if(preference.getKey().equals( "" )) {
-                    
+
                     preference.onParentChanged( preference, true );
                 }
                 preference.setSummary( stringValue );

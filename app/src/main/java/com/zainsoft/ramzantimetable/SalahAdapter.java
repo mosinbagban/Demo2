@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.zainsoft.ramzantimetable.receiver.SalahAlarmReceiver;
 import com.zainsoft.ramzantimetable.receiver.SampleAlarmReceiver;
+import com.zainsoft.ramzantimetable.util.Utility;
 
 import java.util.ArrayList;
 
@@ -81,10 +82,11 @@ public class SalahAdapter extends BaseAdapter {
             public void onClick(View view) {
                /* SampleAlarmReceiver alarm = new SampleAlarmReceiver();
                 alarm.setAlarm(mContext);*/
+                Utility.setAlarm( mContext );
                 //set the alarm by using salahTimetv value
-                SalahAlarmReceiver alarm = new SalahAlarmReceiver();
+                /*SalahAlarmReceiver alarm = new SalahAlarmReceiver();
                 alarm.setAlarm(mContext, pTimes[i], prayerNames.get(i), "");
-                Toast.makeText(mContext, "Reminder set for " + holder.salahNametv.getText(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Reminder set for " + holder.salahNametv.getText(), Toast.LENGTH_SHORT).show();*/
             }
         });
         return rowView;

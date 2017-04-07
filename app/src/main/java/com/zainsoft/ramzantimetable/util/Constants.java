@@ -16,5 +16,11 @@ public class Constants {
     public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME +
             ".LOCATION_DATA_EXTRA";
     public static final int NOTIFICATION_ID = 1;
-    
+
+    public static final int FAJR_NOTIFICATION_ID = 101;
+    public static final int SUNRISE_NOTIFICATION_ID = 102;
+    public static final int DHUHR_NOTIFICATION_ID = 103;
+    public static final int ASR_NOTIFICATION_ID = 104;
+    public static final int MAGHRIB_NOTIFICATION_ID = 105;
+    public static final int ISHA_NOTIFICATION_ID = 106;
 }

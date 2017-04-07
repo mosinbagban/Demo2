@@ -2,10 +2,12 @@ package com.zainsoft.ramzantimetable.receiver;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.SystemClock;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
@@ -16,7 +18,7 @@ import java.util.Calendar;
 /**
  * Created by MB00354042 on 1/24/2017.
  */
-public class SalahAlarmReceiver extends WakefulBroadcastReceiver {
+public class SalahAlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "SalahAlarmReceiver";
     // The app's AlarmManager, which provides access to the system alarm services.
     private AlarmManager alarmMgr;
@@ -39,7 +41,7 @@ public class SalahAlarmReceiver extends WakefulBroadcastReceiver {
                      SalahSchedulingService.class.getName());
         intent.putExtra("PrayerName", prayerName);
         intent.putExtra("city", city);
-        startWakefulService(context, (intent.setComponent(comp)));
+       // startWakefulService(context, (intent.setComponent(comp)));
 
     }
 
@@ -53,21 +55,24 @@ public class SalahAlarmReceiver extends WakefulBroadcastReceiver {
         alarmMgr = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         this.prayerName = prayerName;
         this.city = city;
+        Log.d( TAG, "PrayerName: " + prayerName );
+        Log.d( TAG, "City: " + city );
         Intent intent = new Intent(context, SalahAlarmReceiver.class);
         intent.putExtra("PrayerName", this.prayerName);
         intent.putExtra("city", this.city);
-        alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         time = fixhour(time + 0.5 / 60.0); // add 0.5 minutes to round
         int hours = (int)Math.floor(time);
         double minutes = Math.floor((time - hours) * 60.0);
-        Double min = new Double(minutes);
+       // Double min = new Double(minutes);
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
+       // calendar.setTimeInMillis(System.currentTimeMillis());
         // Set the alarm's trigger time to 8:30 a.m.
-//        Log.d(TAG, "Alarm Set for "+ prayerName + " @" + hours + ":" + min.intValue());
-        calendar.set(Calendar.HOUR_OF_DAY, 18);
-        calendar.set(Calendar.MINUTE, 26);
+        Log.d(TAG, "Alarm Set for "+ prayerName + " @" + hours + ":"+  minutes );
+        calendar.set(Calendar.HOUR_OF_DAY, hours);
+        calendar.set(Calendar.MINUTE, (int) minutes);
+        calendar.set(Calendar.SECOND, 0);
 
         /*
          * If you don't have precise time requirements, use an inexact repeating alarm
@@ -104,6 +109,10 @@ public class SalahAlarmReceiver extends WakefulBroadcastReceiver {
         // clock, and to repeat once a day.
         alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP,
                 calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, alarmIntent);
+        Log.d( TAG, "Alarm Set" );
+       /* alarmMgr .setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_DAY,
+                AlarmManager.INTERVAL_DAY, alarmIntent);*/
 
         // Enable {@code SalahBootReceiver} to automatically restart the alarm when the
         // device is rebooted.

@@ -80,7 +80,7 @@ public class SalahSchedulingService extends IntentService {
             sendNotification(prayerName, city);
           //  createNotification(SalahSchedulingService.this, prayerName, "Its " + prayerName + " time started in " + city, "Its " + prayerName + " time started in " + city);
             // Release the wake lock provided by the BroadcastReceiver.
-            SalahAlarmReceiver.completeWakefulIntent(intent);
+           // SalahAlarmReceiver.completeWakefulIntent(intent);
             // END_INCLUDE(service_onhandle)
         }
     }
@@ -104,38 +104,7 @@ public class SalahSchedulingService extends IntentService {
         mNotificationManager.notify( Constants.NOTIFICATION_ID, mBuilder.build());
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    public static void createNotification(Context context, String salahName, String salahMsg, String eventMessage) {
-        // Prepare intent which is triggered if the
-        // notification is selected
-        int notificationId = 0;
-        Log.d(TAG, "Showing Notification");
-        Intent intent = null;
 
-        intent = new Intent(context, SalahTimeActivity.class);
-        intent.putExtra("fromNotification",true);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        notificationId = 100;
-        PendingIntent pIntent = PendingIntent.getActivity(context, (int) System.currentTimeMillis(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        // Build notification
-        // Actions are just fake
-        Notification noti = new Notification.Builder(context)
-                .setContentTitle(salahName)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setContentText(salahMsg)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentIntent(pIntent)
-                .setStyle(new Notification.BigTextStyle()
-                        .bigText(salahMsg))
-                .build();
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-        // hide the notification after its selected
-        noti.flags |= Notification.FLAG_NO_CLEAR;
-        noti.defaults |= Notification.DEFAULT_SOUND;
-        noti.defaults |= Notification.DEFAULT_VIBRATE;
-        notificationManager.notify(notificationId, noti);
-    }
 
     /**
      * Handle action Foo in the provided background thread with the provided

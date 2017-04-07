@@ -68,6 +68,13 @@
             android:label="@string/title_activity_user_preferences"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>-->
+        <receiver android:name=".receiver.TimeChangeReceiver">
+            <intent-filter>
+                <action android:name="com.zainsoft.ramzantimetable.TIME_CHANGE"></action>
+            </intent-filter>
+        </receiver>
+        <service android:name=".service.AlarmSetupServices"
+                 android:exported="false"/>
     </application>
 
 </manifest>

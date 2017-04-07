@@ -353,7 +353,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         if(pref.getAddress() != null)
             txtCity.setText( pref.getAddress() );
 
-        double[] pTimes = getSalahTime( timezone,lat ,lon );
+        double[] pTimes = Utility.getSalahTime( timezone,lat ,lon );
         setSalahToAdapter( pTimes );
     }
 
@@ -480,7 +480,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                         pref.setLatitude( Double.toString( latitude ) );
                         pref.setLongitude( Double.toString( longitude ) );
                         pref.setTimezone( Double.toString( timezone ) );
-                        prayerTimes = getSalahTime(timezone,latitude ,longitude );
+                        prayerTimes = Utility.getSalahTime(timezone,latitude ,longitude );
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -599,24 +599,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         void onFragmentInteraction(Uri uri);
     }
 
-    private double[] getSalahTime(double timeZone, double latitude, double longitude) {
-        Log.d(TAG, "Getting Salah Time");
-        prayers = new PrayTime();
-        prayers.setTimeFormat(prayers.Time24);
-        prayers.setCalcMethod(prayers.Jafari);
-        prayers.setAsrJuristic(prayers.Shafii);
-        prayers.setAdjustHighLats(prayers.AngleBased);
-        int[] offsets = {0, 0, 0, 0, 0, 0, 0}; // {Fajr,Sunrise,Dhuhr,Asr,Sunset,Maghrib,Isha}
-        prayers.tune(offsets);
 
-        Date now = new Date();
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(now);
-
-        double[] prayerTimes = prayers.getPrayerTimes(cal,latitude, longitude, timeZone);
-
-        return prayerTimes;
-    }
 
     private static double getTimeZoneVal(TimeZone tz) {
         long hours = TimeUnit.MILLISECONDS.toHours(tz.getRawOffset());

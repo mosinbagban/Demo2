@@ -4,13 +4,14 @@
     android:layout_height="match_parent"
     tools:context="com.zainsoft.ramzantimetable.LocationDetailFragment"
 
-    android:background="@android:color/holo_green_light">
+    android:background="@mipmap/bgframe">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_margin="20dp">
 
         <TextView
         android:layout_width="match_parent"
@@ -95,258 +96,106 @@
             </TableRow>
 
         </TableLayout>
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@color/textHeading"
+        android:gravity="center"
+        >
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Salah Start Time"
-            style="@style/MyTextStyle"
+            style="@style/MyTextStyleWhiteBg"
             android:textStyle="bold"
-            android:gravity="center"
+            android:layout_gravity="center"
             android:id="@+id/txtSalahT"
-            android:background="@android:color/holo_orange_dark"
             />
-
-        <LinearLayout
-            android:orientation="vertical"
+        <Switch
+            android:id="@+id/swtchAlarm"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Salah Time"
-                style="@style/MyTextStyle"
-                android:gravity="left"
-                android:visibility="gone"
-                />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/fajr"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"
-                    />
-                <TextView
-                    android:id="@+id/txtFajrTime"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"
-                    android:gravity="left"/>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".2"
-                    android:gravity="center">
-                    <Button
-                        android:id="@+id/btnFajrAlarm"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:background="@android:drawable/ic_popup_reminder"
-                        android:layout_marginRight="25dip"/>
-                </LinearLayout>
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dhuhr"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"
-                    />
-                <TextView
-                    android:id="@+id/txtDhuhrTime"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"
-                    android:gravity="left"/>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".2"
-                    android:gravity="center">
-                    <Button
-                        android:id="@+id/btnDhuhrAlarm"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:background="@android:drawable/ic_popup_reminder"
-                        android:layout_marginRight="25dip"/>
-                </LinearLayout>
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/asr"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"
-                    />
-                <TextView
-                    android:id="@+id/txtAsrTime"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"/>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".2"
-                    android:gravity="center">
-                    <Button
-                        android:id="@+id/btnAsrAlarm"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:background="@android:drawable/ic_popup_reminder"
-                        android:layout_marginRight="25dip"/>
-                </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/maghrib"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"
-                    />
-                <TextView
-                    android:id="@+id/txtMaghribTime"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"/>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".2"
-                    android:gravity="center">
-                    <Button
-                        android:id="@+id/btnMaghribAlarm"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:background="@android:drawable/ic_popup_reminder"
-                        android:layout_marginRight="25dip"/>
-                </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/isha"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"
-                    />
-                <TextView
-                    android:id="@+id/txtIshaTime"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"/>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".2"
-                    android:gravity="center">
-                    <Button
-                        android:id="@+id/btnIshaAlarm"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:background="@android:drawable/ic_popup_reminder"
-                        android:layout_marginRight="25dip"/>
-                </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sunrise"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"
-                    />
-                <TextView
-                    android:id="@+id/txtSunriseTime"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"/>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".2"
-                    android:gravity="center">
-                    <Button
-                        android:id="@+id/btnSunriseAlarm"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:background="@android:drawable/ic_popup_reminder"
-                        android:layout_marginRight="25dip"/>
-                </LinearLayout>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sunset"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"
-                    />
-                <TextView
-                    android:id="@+id/txtSunsetTime"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    style="@style/MyTextStyle"
-                    android:layout_weight="0.4"/>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight=".2"
-                    android:gravity="center">
-                    <Button
-                        android:id="@+id/btnSunsetAlarm"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:background="@android:drawable/ic_popup_reminder"
-                        android:layout_marginRight="25dip"/>
-                </LinearLayout>
-            </LinearLayout>
-
-        </LinearLayout>
-
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            style="@style/MyTextStyleWhiteBg"
+            android:visibility="gone"
+            />
+       </LinearLayout>
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/salahTimeListView" />
+            android:id="@+id/salahTimeListView"
+            android:layout_marginLeft="05dp"/>
 
+        <LinearLayout
+            android:id="@+id/lnrRamzan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/textHeading">
+
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/textHeading"/>
+        <LinearLayout
+            android:id="@+id/lnrSaher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtSaher"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/sehr"
+                style="@style/MyTextStyleWhiteBg"
+                android:layout_weight="0.33"
+                />
+            <TextView
+                android:id="@+id/txtSaherTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="@style/MyTextStyleWhiteBg"
+                android:text="04:30 am"
+                android:layout_weight="0.33"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/MyTextStyleWhiteBg"
+            android:text="Ramzan"
+            android:layout_weight="0.2"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/lnrIftar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/txtiftar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/iftar"
+            style="@style/MyTextStyleWhiteBg"
+            android:layout_weight="0.33"
+            />
+        <TextView
+            android:id="@+id/txtIftarTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/MyTextStyleWhiteBg"
+            android:text="04:30 am"
+            android:layout_weight="0.33"/>
+            <TextView
+                android:id="@+id/txtRamzanCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="@style/MyTextStyleWhiteBg"
+                android:text="26"
+                android:gravity="center"
+                android:layout_weight="0.2"/>
+        </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="0dp"
+              android:layout_weight="1"
+              android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight=".25"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        style="@style/CalenderTextStyle"
+        android:text="Date"
+        android:id="@+id/textDate"/>
+    <TextView
+       android:layout_width="0dp"         android:layout_weight=".125"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        style="@style/CalenderTextStyle"
+        android:text="Fajr"
+        android:id="@+id/textFajr"/>
+    <TextView
+       android:layout_width="0dp"         android:layout_weight=".125"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        style="@style/CalenderTextStyle"
+        android:text="Sunrise"
+        android:id="@+id/textSunrise"/>
+    <TextView
+       android:layout_width="0dp"         android:layout_weight=".125"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        style="@style/CalenderTextStyle"
+        android:text="Dhuhr"
+        android:id="@+id/textDhuhr"/>
+    <TextView
+       android:layout_width="0dp"         android:layout_weight=".125"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        style="@style/CalenderTextStyle"
+        android:text="Asr"
+        android:id="@+id/textAsr"/>
+    <TextView
+       android:layout_width="0dp"         android:layout_weight=".125"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        style="@style/CalenderTextStyle"
+        android:text="Sunset"
+        android:id="@+id/textSunset"/>
+    <TextView
+       android:layout_width="0dp"         android:layout_weight=".125"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        style="@style/CalenderTextStyle"
+        android:text="Maghrib"
+        android:id="@+id/textMaghrib"/>
+    <TextView
+       android:layout_width="0dp"         android:layout_weight=".125"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        style="@style/CalenderTextStyle"
+        android:text="Isha"
+        android:id="@+id/textIsha"/>
+
+</LinearLayout>

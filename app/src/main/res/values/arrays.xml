@@ -67,4 +67,36 @@
         <item>30</item>
         <item>31</item>
     </string-array>
+    <string-array name="ramzan_date">
+        <item>June-28</item>
+        <item>June-29</item>
+        <item>June-30</item>
+        <item>June-31</item>
+        <item>July-1</item>
+        <item>July-2</item>
+        <item>July-3</item>
+        <item>July-4</item>
+        <item>July-5</item>
+        <item>July-6</item>
+        <item>July-7</item>
+        <item>July-8</item>
+        <item>July-9</item>
+        <item>July-10</item>
+        <item>July-11</item>
+        <item>July-12</item>
+        <item>July-13</item>
+        <item>July-14</item>
+        <item>July-15</item>
+        <item>July-16</item>
+        <item>July-17</item>
+        <item>July-18</item>
+        <item>June-19</item>
+        <item>June-20</item>
+        <item>June-21</item>
+        <item>June-22</item>
+        <item>June-23</item>
+        <item>June-24</item>
+        <item>June-25</item>
+        <item>June-26</item>
+    </string-array>
 </resources>

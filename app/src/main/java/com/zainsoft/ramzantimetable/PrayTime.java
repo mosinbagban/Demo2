@@ -88,6 +88,7 @@ public class PrayTime {
     public PrayTime() {
         // Initialize vars
 
+
         this.setCalcMethod(0);
         this.setAsrJuristic(0);
         this.setDhuhrMinutes(0);
@@ -156,6 +157,7 @@ public class PrayTime {
          * selector (0 = angle; 1 = minutes after maghrib) iv : isha parameter
          * value (in angle or minutes)
          */
+
         methodParams = new HashMap<Integer, double[]>();
 
         // Jafari
@@ -613,13 +615,13 @@ public class PrayTime {
             return result;
         }
 
-        for (int i = 0; i < 7; i++) {
+        for (double time : times) {
             if (this.getTimeFormat() == this.getTime12()) {
-                result.add(floatToTime12(times[i], false));
+                result.add(floatToTime12(time, false));
             } else if (this.getTimeFormat() == this.getTime12NS()) {
-                result.add(floatToTime12(times[i], true));
+                result.add(floatToTime12(time, true));
             } else {
-                result.add(floatToTime24(times[i]));
+                result.add(floatToTime24(time));
             }
         }
         return result;

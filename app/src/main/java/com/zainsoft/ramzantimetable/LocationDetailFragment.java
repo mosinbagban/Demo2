@@ -27,7 +27,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -91,7 +94,14 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     TextView txtOutputLat;
     TextView txtOutputLon;
     TextView txtCity;
+    TextView txtSaher;
+    TextView txtIftar;
+    TextView txtRamzanCount;
     Button btnLocateMe;
+    Switch swAlarm;
+    LinearLayout lnrSaher;
+    LinearLayout lnrIftar;
+    LinearLayout lnrRamzan;
 
     ListView lstSalah;
     Location mLastLocation;
@@ -161,10 +171,27 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         View rootView = inflater.inflate(R.layout.fragment_location_detail, container, false);
         txtOutputLon = (TextView) rootView.findViewById(R.id.txtLong);
         txtOutputLat = (TextView) rootView.findViewById(R.id.txtLat);
+        txtSaher = (TextView) rootView.findViewById( R.id.txtSaherTime );
+        txtIftar = (TextView) rootView.findViewById( R.id.txtIftarTime);
+        txtRamzanCount = (TextView) rootView.findViewById( R.id.txtRamzanCount );
         txtCity = (TextView) rootView.findViewById(R.id.txtCity);
+        lnrIftar = (LinearLayout) rootView.findViewById( R.id.lnrIftar );
+        lnrSaher = (LinearLayout) rootView.findViewById( R.id.lnrSaher );
+        lnrRamzan = (LinearLayout) rootView.findViewById( R.id.lnrRamzan );
         lstSalah = (ListView) rootView.findViewById(R.id.salahTimeListView);
         btnLocateMe = (Button) rootView.findViewById(R.id.btnLocateMe);
         btnLocateMe.setOnClickListener(this);
+        swAlarm = (Switch) rootView.findViewById( R.id.swtchAlarm );
+       swAlarm.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
+           @Override
+           public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+               if(isChecked) {
+                Utility.setAlarm( getActivity(),1010 );
+               } else {
+
+               }
+           }
+       } );
         return rootView;
     }
 
@@ -350,23 +377,57 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         if(mLastLocation != null)
             startIntentService();
 
-        if(pref.getAddress() != null)
-            txtCity.setText( pref.getAddress() );
-
         double[] pTimes = Utility.getSalahTime( timezone,lat ,lon );
         setSalahToAdapter( pTimes );
+
+        if(pref.getAddress() != null) {
+            txtCity.setText( pref.getAddress() );
+            if(pref.getAddress().contains( "pune" ) || pref.getAddress().contains( "Pune" )) {
+                getRamzanTime();
+            } else {
+                lnrRamzan.setVisibility( View.GONE );
+            }
+        }
+    }
+
+    private void getRamzanTime() {
+        int tDate = Utility.getRamZanDate();
+        if(tDate != -1) {
+            String localDate [] =  getResources().getStringArray(R.array.ramzan_date);
+            txtSaher.setText(Constants.SAHERI_TIME[tDate] + " am");
+            txtIftar.setText(Constants.IFTAR_TIME[tDate] + " pm");
+            txtRamzanCount.setText("" + (tDate + 1));
+            if(!pref.isSalahAlarm()) {
+                Log.d( TAG, "Setting alarm for Ramzan." );
+                boolean isSet = Utility.setRamzanAlarm( getActivity() );
+                pref.setSalahAlarm( isSet );
+            } else {
+                Log.d( TAG, "Alarm already set for Ramzan, no need to set again." );
+            }
+
+
+            // txtRamzanDate.setText(localDate[tDate]);
+        } else {
+            lnrRamzan.setVisibility( View.GONE );
+        }
     }
 
     private void setSalahToAdapter(double[] pTimes) {
-        ArrayList<String> prayerNames = prayers.getTimeNames();
-        SalahAdapter salahAdapter = new SalahAdapter(getActivity(),pTimes, prayerNames);
-        lstSalah.setAdapter(salahAdapter);
+        if(pTimes != null && pTimes.length > 0) {
+            prayers = new PrayTime();
+            ArrayList<String> prayerNames = prayers.getTimeNames();
+            SalahAdapter salahAdapter = new SalahAdapter(getActivity(),pTimes, prayerNames);
+            lstSalah.setAdapter(salahAdapter);
 
-        MSG_SHARING_STR = "Prayer times ";
-        for(int i=0; i < prayerNames.size(); i++) {
-            MSG_SHARING_STR = MSG_SHARING_STR  +" " + prayerNames.get( i ) + "-"
-                    + salahAdapter.prayerTimes.get( i ) +" ";
+            MSG_SHARING_STR = "Prayer times ";
+            for(int i=0; i < prayerNames.size(); i++) {
+                MSG_SHARING_STR = MSG_SHARING_STR  +" " + prayerNames.get( i ) + "-"
+                        + salahAdapter.prayerTimes.get( i ) +" ";
+            }
+        } else {
+            Log.d( TAG, "No times calculated" );
         }
+
         Log.d( TAG, MSG_SHARING_STR );
         if (pDialog != null) {
             pDialog.dismiss();

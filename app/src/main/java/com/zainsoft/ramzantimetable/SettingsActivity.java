@@ -177,6 +177,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals( fragmentName )
+                || SalahPreferenceFragment.class.getName().equals( fragmentName )
                 || GeneralPreferenceFragment.class.getName().equals( fragmentName )
                 || DataSyncPreferenceFragment.class.getName().equals( fragmentName )
                 || NotificationPreferenceFragment.class.getName().equals( fragmentName );
@@ -201,6 +202,40 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             Log.d( TAG, "New Commit test" );
             bindPreferenceSummaryToValue( findPreference( "example_text" ) );
             bindPreferenceSummaryToValue( findPreference( "example_list" ) );
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity( new Intent( getActivity(), SettingsActivity.class ) );
+                return true;
+            }
+            return super.onOptionsItemSelected( item );
+        }
+    }
+
+    /**
+     * This fragment shows salah preferences only. It is used to set up salah calculation methods and
+     * to Adjusting Methods for Higher Latitudes
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class SalahPreferenceFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate( savedInstanceState );
+            addPreferencesFromResource( R.xml.pref_salah );
+            setHasOptionsMenu( true );
+
+            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
+            // to their values. When their values change, their summaries are
+            // updated to reflect the new value, per the Android Design
+            // guidelines.
+            Log.d( TAG, "Salah Preferences" );
+            bindPreferenceSummaryToValue( findPreference( "calculation_methods_list" ) );
+            bindPreferenceSummaryToValue( findPreference( "juristic_methods_list" ) );
+            bindPreferenceSummaryToValue( findPreference( "adjustment_methods_list" ) );
+
         }
 
         @Override

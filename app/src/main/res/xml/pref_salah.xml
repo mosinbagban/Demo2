@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:defaultValue="Karachi"
+        android:entries="@array/pref_calculation_methods_titles"
+        android:entryValues="@array/pref_calculation_methods_values"
+        android:key="calculation_methods_list"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_salah_calculation_methods" />
+    <ListPreference
+        android:defaultValue="Shafii"
+        android:entries="@array/pref_juristic_methods_titles"
+        android:entryValues="@array/pref_juristic_methods_values"
+        android:key="juristic_methods_list"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_juristic_methods" />
+    <ListPreference
+        android:defaultValue="None"
+        android:entries="@array/pref_adjustment_methods_titles"
+        android:entryValues="@array/pref_adjustment_methods_values"
+        android:key="adjustment_methods_list"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_adjustment_methods" />
+
+</PreferenceScreen>

@@ -19,7 +19,27 @@
 
     <style name="MyTextStyle" parent="android:Widget.TextView">
         <item name="android:padding">10dip</item>
+        <item name="android:textColor">@color/textHeading</item>
+    </style>
+    <style name="AboutTextStyle" parent="android:Widget.TextView">
+        <item name="android:padding">20dip</item>
+        <item name="android:paddingLeft">10dip</item>
+        <item name="android:textColor">@color/textHeading</item>
+    </style>
+    <style name="MyBoldTextStyle" parent="android:Widget.TextView">
+        <item name="android:padding">10dip</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/textHeading</item>
+    </style>
+    <style name="MyTextStyleWhiteBg" parent="android:Widget.TextView">
+        <item name="android:padding">10dip</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textColor">@android:color/white</item>
+    </style>
+    <style name="CalenderTextStyle" parent="android:Widget.TextView">
+        <item name="android:padding">2dip</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/textHeading</item>
     </style>
 
 </resources>

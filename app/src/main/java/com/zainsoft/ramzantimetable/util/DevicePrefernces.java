@@ -17,10 +17,13 @@ public class DevicePrefernces {
     private static  final String USER_LATITUDE = "user_latitude";
     private static  final String USER_LONGITUDE = "user_longitude";
     private static final String USER_TIMEZONE = "user_timezone";
+    private static final String RAMZAN_ALARM = "ramzan_alarm";
+    private static final String SALAH_PREF = "salah_pref";
     private String address;
     private String latitude;
     private String longitude;
     private String timezone;
+
 
     public DevicePrefernces(Context context) {
         this.mContext = context;
@@ -66,6 +69,24 @@ public class DevicePrefernces {
 
     public void setTimezone(String timezone) {
         editor.putString(USER_TIMEZONE, timezone);
+        editor.commit();
+    }
+
+    public boolean getSalahPref(int i) {
+        return sharedPref.getBoolean( SALAH_PREF + i, false );
+    }
+
+    public void setSalahPref(boolean isOn, int i) {
+        editor.putBoolean(SALAH_PREF +i, isOn);
+        editor.commit();
+    }
+
+    public boolean isSalahAlarm() {
+        return sharedPref.getBoolean( RAMZAN_ALARM , false );
+    }
+
+    public void setSalahAlarm(boolean isSet) {
+        editor.putBoolean(RAMZAN_ALARM, isSet);
         editor.commit();
     }
 }

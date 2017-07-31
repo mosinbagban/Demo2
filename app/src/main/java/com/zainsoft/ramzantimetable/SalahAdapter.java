@@ -1,17 +1,25 @@
 package com.zainsoft.ramzantimetable;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zainsoft.ramzantimetable.receiver.SalahAlarmReceiver;
 import com.zainsoft.ramzantimetable.receiver.SampleAlarmReceiver;
+import com.zainsoft.ramzantimetable.util.DevicePrefernces;
 import com.zainsoft.ramzantimetable.util.Utility;
 
 import java.util.ArrayList;
@@ -28,7 +36,8 @@ public class SalahAdapter extends BaseAdapter {
     Context mContext;
     private static LayoutInflater inflater = null;
     PrayTime prayers;
-
+    DevicePrefernces pref;
+    private SharedPreferences stoereperfs;
 
 
     public SalahAdapter(Context context, double[] pTimes, ArrayList<String>pNames) {
@@ -36,12 +45,15 @@ public class SalahAdapter extends BaseAdapter {
         this.pTimes = pTimes;
         this.mContext = context;
         this.inflater = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        stoereperfs = PreferenceManager.getDefaultSharedPreferences(context);
         prayers = new PrayTime();
+       // Log.d( "Calculation method"+ stoereperfs.getString( "notifications_salah_message", "" ) );
         prayers.setTimeFormat(prayers.Time12);
         prayers.setCalcMethod(prayers.Jafari);
-        prayers.setAsrJuristic(prayers.Shafii);
+       // prayers.setAsrJuristic(stoereperfs.getString( "","" ));
         prayers.setAdjustHighLats(prayers.AngleBased);
         prayerTimes = prayers.adjustTimesFormat(pTimes);
+        pref = new DevicePrefernces( context );
     }
     @Override
     public int getCount() {
@@ -61,7 +73,7 @@ public class SalahAdapter extends BaseAdapter {
     {
         TextView salahNametv;
         TextView salahTimetv;
-        Button btn;
+        Switch btn;
     }
 
 
@@ -73,22 +85,60 @@ public class SalahAdapter extends BaseAdapter {
         rowView = inflater.inflate(R.layout.salah_time_list_row_layout, null);
         holder.salahNametv = (TextView) rowView.findViewById(R.id.txtSalahName);
         holder.salahTimetv = (TextView) rowView.findViewById(R.id.txtSalahTime);
-        holder.btn = (Button) rowView.findViewById(R.id.btnSalahAlarm);
+        holder.btn = (Switch) rowView.findViewById(R.id.btnSalahAlarm);
         //Log.d(TAG, i + ". SalahName: " + prayerNames.get(i));
         holder.salahNametv.setText(prayerNames.get(i));
         holder.salahTimetv.setText(prayerTimes.get(i));
-        holder.btn.setOnClickListener(new View.OnClickListener() {
+        holder.btn.setChecked( pref.getSalahPref( i ) );
+        holder.btn.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-               /* SampleAlarmReceiver alarm = new SampleAlarmReceiver();
-                alarm.setAlarm(mContext);*/
-                Utility.setAlarm( mContext );
-                //set the alarm by using salahTimetv value
-                /*SalahAlarmReceiver alarm = new SalahAlarmReceiver();
-                alarm.setAlarm(mContext, pTimes[i], prayerNames.get(i), "");
-                Toast.makeText(mContext, "Reminder set for " + holder.salahNametv.getText(), Toast.LENGTH_SHORT).show();*/
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    setAlarm(prayerNames.get(i) ,pTimes[i], i, false );
+                    pref.setSalahPref( isChecked, i );
+                    Toast.makeText(mContext, "Reminder set for " + holder.salahNametv.getText(), Toast.LENGTH_SHORT).show();
+                } else {
+                    // The toggle is disabled
+                    removeAlarm( mContext, (100+i) );
+                    pref.setSalahPref( isChecked, i );
+                    Toast.makeText(mContext, "Reminder remove for " + holder.salahNametv.getText(), Toast.LENGTH_SHORT).show();
+                }
             }
-        });
+        } );
+//        holder.btn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent =  new Intent(  );
+//                intent.setClassName(mContext, "com.zainsoft.ramzantimetable.service.AlarmSetupServices"  );
+//                intent.putExtra( "salahName", prayerNames.get(i) );
+//                intent.putExtra( "salahTime", pTimes[i] );
+//                intent.putExtra( "notificationId", i );
+//                intent.putExtra("allPrayer", false);
+//                mContext.startService(intent);
+//                Toast.makeText(mContext, "Reminder set for " + holder.salahNametv.getText(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+
         return rowView;
+    }
+
+    private void setAlarm(String salahName, double salahTime, int notificationId, boolean allPrayers){
+        Intent intent = new Intent();
+        intent.setClassName( mContext, "com.zainsoft.ramzantimetable.service.AlarmSetupServices" );
+        intent.putExtra( "salahName", salahName );
+        intent.putExtra( "salahTime", salahTime );
+        intent.putExtra( "notificationId", notificationId );
+        intent.putExtra( "allPrayer", allPrayers );
+        intent.putExtra( "IsFromTimeChange", false );
+        mContext.startService( intent );
+    }
+
+    private void removeAlarm(Context mContext, int requestCode) {
+        Intent intent = new Intent(mContext, SalahAlarmReceiver.class);
+        intent.setAction( "com.zainsoft.ramzantimetable.SALAH_ALARM" );
+        intent.putExtra( "IsFromTimeChange", false );
+        PendingIntent alarmIntent = PendingIntent.getBroadcast( mContext, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT );
+        alarmIntent.cancel();
     }
 }

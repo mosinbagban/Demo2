@@ -31,6 +31,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.zainsoft.ramzantimetable.util.Utility;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -76,9 +77,14 @@ public class SalahTimeActivity extends AppCompatActivity
         toggle.syncState();
         perfs = PreferenceManager.getDefaultSharedPreferences(SalahTimeActivity.this);
         Boolean example_switch = perfs.getBoolean( "notifications_salah_message", false );
+
         Log.d( TAG, "notifications_salah_message: " + example_switch );
         String gpsPerfKey = getString(R.string.gps_pref_key);
-
+        if(getIntent().hasExtra( "notificationId" )) {
+            Log.d( TAG, "Application started by notification" );
+            int notId = getIntent().getIntExtra( "notificationId", 0 );
+            Utility.cancelNotification( this, notId );
+        }
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         if (savedInstanceState == null) {
@@ -144,21 +150,34 @@ public class SalahTimeActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_qibla) {
             // Handle the camera action
             Intent intent = new Intent( getApplicationContext(), QiblaActivity.class );
             startActivity( intent );
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_salah_cal) {
+            Intent intent = new Intent( getApplicationContext(), SalahCalenderActivity.class );
+            startActivity( intent );
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_salah_time) {
+            lfrg = LocationDetailFragment.newInstance("","");
+            android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.container, lfrg).commit();
+        }/*  else if (id == R.id.nav_manage) {
 
-        } else if (id == R.id.nav_manage) {
+        } */else if (id == R.id.nav_share) {
+            if(lfrg.MSG_SHARING_STR != null) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, lfrg.ADDRESS + " "+ lfrg.MSG_SHARING_STR);
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+            } else {
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            }
+        } else if (id == R.id.nav_about) {
+           AboutFragment abtFrgmt = AboutFragment.newInstance();
+            android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.container, abtFrgmt).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

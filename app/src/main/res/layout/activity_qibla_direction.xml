@@ -1,62 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:id="@+id/mainLayout"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@mipmap/background"
-              android:orientation="vertical">
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.zainsoft.ramzantimetable.QiblaActivity">
 
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android" android:layout_marginTop="10px"
-        android:orientation="vertical" android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-        <LinearLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:orientation="vertical" android:background="@mipmap/leather" android:layout_width="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:gravity="center_horizontal"
-            android:layout_height="wrap_content" android:id="@+id/textLayout">
-            <TextView
-                android:textSize="@dimen/location" android:id="@+id/location_text_line2"
-                android:textColor="@color/gray" android:layout_width="fill_parent" android:layout_height="fill_parent"
-                android:gravity="center_horizontal" android:paddingTop="50px"
-                android:lines="2"/>
-        </LinearLayout>
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                      android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:layout_centerInParent="true" android:id="@+id/noLocationLayout"
-                      android:background="@mipmap/leather">
-            <TextView
-                android:textSize="@dimen/location" android:textColor="@color/gray"
-                android:gravity="center" android:id="@+id/noLocationText" android:paddingTop="30px"
-                android:paddingLeft="30px" android:paddingRight="30px"
-                android:layout_height="fill_parent" android:layout_width="fill_parent"
-                android:lines="5" />
-        </LinearLayout>
-        <FrameLayout
-            android:orientation="vertical" android:id="@+id/qiblaFrameLayout"
-            android:layout_below="@id/textLayout" android:layout_width="wrap_content"
-            android:layout_marginBottom="20px"
-            android:layout_height="wrap_content" android:layout_centerInParent="true">
-            <FrameLayout
-                android:layout_gravity="center"
-                android:orientation="vertical" android:id="@+id/qiblaLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
-                <ImageView
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:id="@+id/frameImage" android:layout_gravity="center"
-                    android:src="@mipmap/frame" />
-                <ImageView
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_gravity="center" android:id="@+id/compassImage"
-                    android:src="@mipmap/rosetta" />
-                <ImageView
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_gravity="center" android:id="@+id/arrowImage"
-                    android:src="@mipmap/arrow" />
-            </FrameLayout>
-        </FrameLayout>
-    </RelativeLayout>
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-</LinearLayout>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/textHeading"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_qibla_direction"/>
+
+    <!--<android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+
+        android:src="@android:drawable/ic_menu_share"/>-->
+
+</android.support.design.widget.CoordinatorLayout>

@@ -11,10 +11,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.zainsoft.ramzantimetable.PrayTime;
+import com.zainsoft.ramzantimetable.QiblaActivity;
 import com.zainsoft.ramzantimetable.R;
 import com.zainsoft.ramzantimetable.SalahTimeActivity;
 import com.zainsoft.ramzantimetable.receiver.RamzanAlarmReceiver;
@@ -305,6 +307,22 @@ public class Utility {
 
                 alarmManager.set(AlarmManager.RTC_WAKEUP, iftarCal.getTimeInMillis(), pendingIntent);
             }
+        }
+        return true;
+    }
+
+    /**
+     * Check the device is above marshmallow
+     *
+     * */
+    public static boolean canMakeSmores(){
+        return(Build.VERSION.SDK_INT> Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+
+
+    public static boolean hasPermission(Context context, String permission) {
+        if(canMakeSmores()){
+            return((ContextCompat.checkSelfPermission(context, permission)== PackageManager.PERMISSION_GRANTED));
         }
         return true;
     }

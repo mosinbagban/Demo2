@@ -157,7 +157,7 @@
     <string name="longitude_west">W</string>
     <string name="no_location_yet">Please wait. Detecting your location...\nOr you can select your city in the Settings.</string>
     <string name="default_location_text">Direction of Qibla \nin %s</string>
-    <string name="geo_location_info">Location Data Acquired.</string>
+    <string name="geo_location_info">We got the Qibla direction.</string>
 
     <string name="gps_status">Use GPS</string>
     <string name="gps_status_summary">Enables using GPS for getting your location.</string>
@@ -190,5 +190,6 @@
     <string name="state_location_pref_key">state_LOCATION_PREF</string>
     <string name="title_activity_user_preferences">UserPreferencesActivity</string>
     <string name="my_pref_key">com.zainsoft.ramzantimetable.SALAH_PREFERENCE_KEY</string>
-    <string name="title_activity_salah_calender">SalahCalenderActivity</string>
+    <string name="title_activity_qibla">Qibla Direction</string>
+    <string name="title_activity_salah_calender">Salah Calender</string>
 </resources>

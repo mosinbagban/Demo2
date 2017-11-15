@@ -3,60 +3,63 @@
               android:orientation="horizontal"
               android:layout_width="0dp"
               android:layout_weight="1"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="@android:color/white">
 
     <TextView
         android:layout_width="0dp"
-        android:layout_weight=".25"
+        android:layout_weight=".15"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         style="@style/CalenderTextStyle"
         android:text="Date"
         android:id="@+id/textDate"/>
     <TextView
-       android:layout_width="0dp"         android:layout_weight=".125"
+       android:layout_width="0dp"         android:layout_weight=".135"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         style="@style/CalenderTextStyle"
         android:text="Fajr"
         android:id="@+id/textFajr"/>
     <TextView
-       android:layout_width="0dp"         android:layout_weight=".125"
+       android:layout_width="0dp"         android:layout_weight=".135"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         style="@style/CalenderTextStyle"
         android:text="Sunrise"
-        android:id="@+id/textSunrise"/>
+        android:id="@+id/textSunrise"
+        android:visibility="gone"/>
     <TextView
-       android:layout_width="0dp"         android:layout_weight=".125"
+       android:layout_width="0dp"         android:layout_weight=".135"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         style="@style/CalenderTextStyle"
         android:text="Dhuhr"
         android:id="@+id/textDhuhr"/>
     <TextView
-       android:layout_width="0dp"         android:layout_weight=".125"
+       android:layout_width="0dp"         android:layout_weight=".135"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         style="@style/CalenderTextStyle"
         android:text="Asr"
         android:id="@+id/textAsr"/>
     <TextView
-       android:layout_width="0dp"         android:layout_weight=".125"
+       android:layout_width="0dp"         android:layout_weight=".135"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         style="@style/CalenderTextStyle"
         android:text="Sunset"
-        android:id="@+id/textSunset"/>
+        android:id="@+id/textSunset"
+        android:visibility="gone"/>
     <TextView
-       android:layout_width="0dp"         android:layout_weight=".125"
+       android:layout_width="0dp"         android:layout_weight=".135"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         style="@style/CalenderTextStyle"
         android:text="Maghrib"
         android:id="@+id/textMaghrib"/>
     <TextView
-       android:layout_width="0dp"         android:layout_weight=".125"
+       android:layout_width="0dp"         android:layout_weight=".135"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
         style="@style/CalenderTextStyle"

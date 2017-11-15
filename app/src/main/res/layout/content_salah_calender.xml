@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.zainsoft.ramzantimetable.SalahCalenderActivity"
-    tools:showIn="@layout/activity_salah_calender"
-    android:background="@mipmap/bgframe">
+    tools:showIn="@layout/activity_salah_calender">
 
 
     <LinearLayout
@@ -18,73 +17,82 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true">
+        >
+
         <LinearLayout
             android:id="@+id/lnrcal"
             android:orientation="horizontal"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content">
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+
+            android:background="@color/textHeading">
+
 
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight=".25"
+                android:layout_weight=".15"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                style="@style/CalenderTextStyle"
+                style="@style/CalenderHeaderTextStyle"
                 android:text="Date"
                 android:id="@+id/textDate"/>
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight=".25"
+                android:layout_width="0dp"         android:layout_weight=".135"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                style="@style/CalenderTextStyle"
-                android:text="Fajr"/>
+                style="@style/CalenderHeaderTextStyle"
+                android:text="Fajr"
+                android:id="@+id/textFajr"/>
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight=".25"
+                android:layout_width="0dp"         android:layout_weight=".135"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                style="@style/CalenderTextStyle"
-                android:text="Sunrise"/>
+                style="@style/CalenderHeaderTextStyle"
+                android:text="Sunrise"
+                android:id="@+id/textSunrise"
+                android:visibility="gone"/>
             <TextView
-                android:layout_width="0dp"               android:layout_weight=".25"
+                android:layout_width="0dp"         android:layout_weight=".135"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                style="@style/CalenderTextStyle"
-                android:text="Dhuhr"/>
+                style="@style/CalenderHeaderTextStyle"
+                android:text="Dhuhr"
+                android:id="@+id/textDhuhr"/>
             <TextView
-                android:layout_width="0dp"               android:layout_weight=".25"
+                android:layout_width="0dp"         android:layout_weight=".135"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                style="@style/CalenderTextStyle"
-                android:text="Asr"/>
+                style="@style/CalenderHeaderTextStyle"
+                android:text="Asr"
+                android:id="@+id/textAsr"/>
             <TextView
-                android:layout_width="0dp"               android:layout_weight=".25"
+                android:layout_width="0dp"         android:layout_weight=".135"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                style="@style/CalenderTextStyle"
-                android:text="Sunset"/>
+                style="@style/CalenderHeaderTextStyle"
+                android:text="Sunset"
+                android:id="@+id/textSunset"
+                android:visibility="gone"/>
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight=".25"
+                android:layout_width="0dp"         android:layout_weight=".135"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                style="@style/CalenderTextStyle"
-                android:text="Maghrib"/>
+                style="@style/CalenderHeaderTextStyle"
+                android:text="Maghrib"
+                android:id="@+id/textMaghrib"/>
             <TextView
-                android:layout_width="0dp"
-                android:layout_weight=".25"
+                android:layout_width="0dp"         android:layout_weight=".135"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                style="@style/CalenderTextStyle"
-                android:text="Isha"/>
+                style="@style/CalenderHeaderTextStyle"
+                android:text="Isha"
+                android:id="@+id/textIsha"/>
+
         </LinearLayout>
         <ListView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
             android:id="@+id/listSalahTimeCalender"
             />
         <ImageView
@@ -94,4 +102,4 @@
             />
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

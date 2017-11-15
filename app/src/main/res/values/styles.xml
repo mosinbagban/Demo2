@@ -37,9 +37,14 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
     <style name="CalenderTextStyle" parent="android:Widget.TextView">
-        <item name="android:padding">2dip</item>
-        <item name="android:textSize">15sp</item>
+        <item name="android:padding">1dip</item>
+        <item name="android:textSize">10sp</item>
         <item name="android:textColor">@color/textHeading</item>
+    </style>
+    <style name="CalenderHeaderTextStyle" parent="android:Widget.TextView">
+        <item name="android:padding">1dip</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
 </resources>

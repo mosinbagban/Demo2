@@ -40,7 +40,6 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -49,12 +48,10 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.zainsoft.ramzantimetable.location.FetchAddressIntentService;
 import com.zainsoft.ramzantimetable.network.NetworkConnector;
-import com.zainsoft.ramzantimetable.util.AlertDialogManager;
 import com.zainsoft.ramzantimetable.util.Constants;
 import com.zainsoft.ramzantimetable.util.DevicePrefernces;
 import com.zainsoft.ramzantimetable.util.Utility;
@@ -64,8 +61,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -126,6 +121,18 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     public static String ADDRESS = "";
     private DevicePrefernces pref;
     private NotificationManager mNotificationManager;
+    String[] locPerms = {
+            Manifest.permission.ACCESS_FINE_LOCATION
+    };
+    String[] storagePerms = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    int locationPermsRequestCode = 100;
+    int locationPermsRequestCode1 = 101;
+    int storagePermsRequestCode = 200;
+
+    public static Object mLocationMutex;
+    private android.support.v7.app.AlertDialog alert;
 
     public LocationDetailFragment() {
         // Required empty public constructor
@@ -161,7 +168,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         mNotificationManager.cancel( Constants.NOTIFICATION_ID );
 
       //  new LocationTasker().execute();
-       // buildGoogleApiClient();
+            buildGoogleApiClient();
     }
 
     @Override
@@ -182,6 +189,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         btnLocateMe = (Button) rootView.findViewById(R.id.btnLocateMe);
         btnLocateMe.setOnClickListener(this);
         swAlarm = (Switch) rootView.findViewById( R.id.swtchAlarm );
+        mLocationMutex = new Object();
        swAlarm.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
            @Override
            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -198,14 +206,24 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated( savedInstanceState );
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         if(pref.getLatitude()!= null || pref.getLongitude()!= null || pref.getTimezone()!= null) {
             double lat = Double.valueOf( pref.getLatitude() );
             double lon = Double.valueOf( pref.getLongitude() );
             double tz = Double.valueOf( pref.getTimezone() );
             updateUI( lat,lon,tz );
-
         } else {
-            settingsRequest();
+            buildGoogleApiClient();
+            if(hasPermission( locPerms[0] )) {
+                settingsRequest();
+            } else {
+                requestPermissions(locPerms, locationPermsRequestCode1);
+            }
         }
     }
 
@@ -233,7 +251,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         mListener = null;
     }
 
-    class LocationTasker extends AsyncTask<Void, Void, Location> {
+    class LocationTasker1 extends AsyncTask<Void, Void, Location> {
         @Override
         protected void onPreExecute() {
             if(pDialog == null) {
@@ -241,10 +259,13 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                 pDialog.setMessage("Getting Location...");
             }
             pDialog.show();
-            buildGoogleApiClient();
+            if(!mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.connect();
+            }
             setLocationRequest();
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient,
                     mLocationRequest, LocationDetailFragment.this);
+
             super.onPreExecute();
         }
 
@@ -285,8 +306,18 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                    .addApi(LocationServices.API)
                    .build();
        }
-       if(!mGoogleApiClient.isConnected())
-            mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        if(mGoogleApiClient.isConnected()) {
+            Log.d(TAG, "====onConnected====");
+            //new LocationTasker1().execute();
+        } else {
+            Log.d(TAG, "====NotConnected====");
+            buildGoogleApiClient();
+            // new LocationTasker().execute();
+        }
 
     }
 
@@ -297,7 +328,6 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         mLocationRequest.setFastestInterval(5 * 1000);
     }
 
-
     protected void removeLocationUpdate() {
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             Log.d(TAG, "Removing location update");
@@ -306,22 +336,22 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         }
     }
 
-    private void checkPermissions() {
+  /*  private void checkPermissions() {
         String permissions[] = {android.Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (String permission : permissions) {
                 if (ContextCompat.checkSelfPermission(getActivity(),
                         permission)!= PackageManager.PERMISSION_GRANTED)
-                    requestLocationPermission(permissions);
+                    requestLocationPermission(permissions,ACCESS_FINE_LOCATION_INTENT_ID );
                 else
                     settingsRequest();
             }
         } else
             settingsRequest();
-    }
+    }*/
 
-    private void requestLocationPermission(String[] permissions) {
+    private void requestLocationPermission(String[] permissions , int requestCode) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION)) {
             ActivityCompat.requestPermissions(getActivity(),permissions,
@@ -331,7 +361,6 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                     ACCESS_FINE_LOCATION_INTENT_ID);
         }
     }
-
 
     @Override
     public void onResume() {
@@ -352,18 +381,12 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
 
     }
 
-    @Override
-    public void onConnected(Bundle bundle) {
-        if(mGoogleApiClient.isConnected()) {
-            Log.d(TAG, "====onConnected====");
-          //  new LocationTasker().execute();
-            new LocationTasker().execute();
+    void checkLocPermissionAndExecute() {
+        if (hasPermission( locPerms[0] )) {
+             new LocationTasker1().execute();
         } else {
-            Log.d(TAG, "====NotConnected====");
-            buildGoogleApiClient();
-           // new LocationTasker().execute();
+            requestPermissions( locPerms, locationPermsRequestCode);
         }
-
     }
 
     private void updateUI(Double lat, Double lon, double timezone) {
@@ -436,9 +459,7 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-
-    }
+    public void onConnectionSuspended(int i) {}
 
     @Override
     public void onLocationChanged(Location location) {
@@ -462,7 +483,8 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
             if(pDialog != null) {
                 pDialog.dismiss();
             }
-            new LocationTasker().execute();
+//            new LocationTasker().execute();
+            checkLocPermissionAndExecute();
         }
     }
 
@@ -660,8 +682,6 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
         void onFragmentInteraction(Uri uri);
     }
 
-
-
     private static double getTimeZoneVal(TimeZone tz) {
         long hours = TimeUnit.MILLISECONDS.toHours(tz.getRawOffset());
         long minutes = TimeUnit.MILLISECONDS.toMinutes(tz.getRawOffset())
@@ -680,7 +700,9 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
     }
 
     public void settingsRequest() {
-        buildGoogleApiClient();
+        if(!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        }
         setLocationRequest();
         Log.d(TAG, "Checking location settings");
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
@@ -700,7 +722,8 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                         // requests here.
                         Log.d(TAG, "All location settings are satisfied. The client can " +
                                 "initialize location requests here.");
-                       new LocationTasker().execute();
+                        checkLocPermissionAndExecute();
+                      // new LocationTasker().execute();
                        // buildGoogleApiClient();
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
@@ -737,7 +760,8 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                             getPlaces(data);
                             //Log.i(TAG, "Place: " + place.getName());
                         }else if (requestCode == LocationDetailFragment.REQUEST_CHECK_SETTINGS){
-                            new LocationTasker().execute();;
+//                            new LocationTasker().execute();
+                            checkLocPermissionAndExecute();
                         }
 
                         break;
@@ -760,5 +784,93 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
                         break;
                 }
 
+    }
+
+    /**
+     * Check the device is above marshmallow
+     *
+     * */
+    private boolean canMakeSmores(){
+        return(Build.VERSION.SDK_INT> Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+
+
+    private boolean hasPermission(String permission) {
+        if(canMakeSmores()){
+            return((ContextCompat.checkSelfPermission(getActivity(), permission)==PackageManager.PERMISSION_GRANTED));
+        }
+        return true;
+    }
+
+   /* private void requestPermission(String[] perms, int reqCode) {
+        // No explanation needed, we can request the permission.
+        ActivityCompat.requestPermissions(getActivity(), perms, reqCode);
+    }*/
+
+
+    @Override
+    public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults){
+                Log.d( TAG, ">>>>>>>>>>>>>>>Permission Request Code: " + permsRequestCode  + ">>>>>>>>>>>>>>>>>>>>>>");
+        switch(permsRequestCode){
+
+            case 100:
+                boolean locationAccepted = grantResults[0]==PackageManager.PERMISSION_GRANTED;
+              //  boolean locationAccepted2 = grantResults[1]==PackageManager.PERMISSION_GRANTED;
+                Log.d( TAG, "Location Accepted: " + locationAccepted );
+               // Log.d( TAG, "Location Accepted2: " + locationAccepted2 );
+                if(locationAccepted /*&& locationAccepted2*/) {
+                    Log.d( TAG, "===========Location Permission Accepted===============" );
+                    new LocationTasker1().execute(  );
+                } else {
+                    Toast.makeText(getActivity(), "Please allow location permission in order to get your current location", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case 101:
+                boolean locationAccepted1 = grantResults[0]==PackageManager.PERMISSION_GRANTED;
+                //  boolean locationAccepted2 = grantResults[1]==PackageManager.PERMISSION_GRANTED;
+                Log.d( TAG, "Location Accepted1: " + locationAccepted1 );
+                // Log.d( TAG, "Location Accepted2: " + locationAccepted2 );
+                if(locationAccepted1 /*&& locationAccepted2*/) {
+                    Log.d( TAG, "===========Location Permission Accepted===============" );
+                   settingsRequest();
+                } else {
+                    buildAlertMessageNoGps();
+                    //Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
+                }
+                break;
+
+            case 200:
+                boolean storageAccepted = grantResults[0]==PackageManager.PERMISSION_GRANTED;
+                //do what is required after accepting storage permission
+                break;
+
+        }
+    }
+    private void buildAlertMessageNoGps() {
+        if(alert != null && alert.isShowing()) {
+            Log.d( TAG, "Already displaying alert" );
+        } else {
+            final android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
+            builder.setMessage("Kindly allow application to access your location one time in order to get Salah time.")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes, I'm in", new DialogInterface.OnClickListener() {
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            dialog.cancel();
+                            requestPermissions( locPerms, locationPermsRequestCode1 );
+                           // startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+
+                        }
+                    })
+                    .setNegativeButton("No, I want to Exit", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            //Utility.showToast( getActivity(), "Please allow location permission in order to get your current location" );
+                            dialog.cancel();
+                            //getActivity().finish();
+                        }
+                    });
+            alert = builder.create();
+            alert.show();
+        }
     }
 }

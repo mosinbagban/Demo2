@@ -28,32 +28,30 @@ package com.zainsoft.ramzantimetable;
  * 
  */
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -63,13 +61,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.location.LocationListener;
 import com.zainsoft.ramzantimetable.util.ConcurrencyUtil;
 import com.zainsoft.ramzantimetable.util.ConstantUtilInterface;
 import com.zainsoft.ramzantimetable.util.QiblaCompassManager;
 import com.zainsoft.ramzantimetable.util.Utility;
+
+import java.util.Locale;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class QiblaActivity extends AppCompatActivity implements AnimationListener,
@@ -115,6 +116,10 @@ public class QiblaActivity extends AppCompatActivity implements AnimationListene
     public boolean isRegistered = false;
     public boolean isGPSRegistered = false;
     private boolean isDialogDisplaying;
+    private static final String[] LOC_PERMS = {
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+    };
+    private static final int LOCATION_PERMS_REQUEST_CODE = 100;
 
     // TimerTask talks to us by sending messages about changes in direction
     // of north and Qibla
@@ -384,6 +389,8 @@ public class QiblaActivity extends AppCompatActivity implements AnimationListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qibla_direction);
         // registering for listeners
+        Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar );
+        setSupportActionBar( toolbar );
         registerListeners();
         // Checking if the GPS is on or off. If it was on the default location
         // will be set and if its on, appropriate
@@ -406,10 +413,32 @@ public class QiblaActivity extends AppCompatActivity implements AnimationListene
 
         boolean isGPS = false;
 
-        checkForGPSnShowQibla();
+      /*  if(hasPermission( LOC_PERMS[0] )) {
+            checkForGPSnShowQibla();
+        } else {
+            requestLocationPermission();
+        }
+*/
         this.qiblaImageView = (ImageView) findViewById(R.id.arrowImage);
         this.compassImageView = (ImageView) findViewById(R.id.compassImage);
     }
+
+    /**
+     * Check the device is above marshmallow
+     *
+     * */
+    private boolean canMakeSmores(){
+        return(Build.VERSION.SDK_INT> Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+
+
+    private boolean hasPermission(String permission) {
+        if(canMakeSmores()){
+            return((ContextCompat.checkSelfPermission(QiblaActivity.this, permission)== PackageManager.PERMISSION_GRANTED));
+        }
+        return true;
+    }
+
 
     private void checkForGPSnShowQibla() {
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
@@ -530,7 +559,13 @@ public class QiblaActivity extends AppCompatActivity implements AnimationListene
     protected void onResume() {
         super.onResume();
         registerListeners();
-        checkForGPSnShowQibla();
+      //  checkForGPSnShowQibla();
+        if(hasPermission( LOC_PERMS[0] )) {
+            checkForGPSnShowQibla();
+        } else {
+            requestLocationPermission();
+            //ActivityCompat.requestPermissions( QiblaActivity.this, LOC_PERMS, LOCATION_PERMS_REQUEST_CODE );
+        }
     }
 
     @Override
@@ -589,7 +624,7 @@ public class QiblaActivity extends AppCompatActivity implements AnimationListene
         final int height = Math.abs(frameLayout.getBottom()
                 - frameLayout.getTop());
 
-        LinearLayout main = (LinearLayout) findViewById(R.id.mainLayout);
+       // LinearLayout main = (LinearLayout) findViewById(R.id.mainLayout);
         float pivotX = width / 2f;
         float pivotY = height / 2f;
         animation = new RotateAnimation(new Double(fromDegree).floatValue(),
@@ -650,5 +685,50 @@ public class QiblaActivity extends AppCompatActivity implements AnimationListene
         onGPSOff(location);
     }*/
 
+    public void requestLocationPermission() {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    LOC_PERMS[0])) {
 
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle("Location Access")
+                        .setMessage("Please allow location permission to get accurate Qibla direction")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(QiblaActivity.this,
+                                        LOC_PERMS,
+                                        LOCATION_PERMS_REQUEST_CODE );
+                            }
+                        })
+                        .create()
+                        .show();
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        LOC_PERMS,
+                        LOCATION_PERMS_REQUEST_CODE );
+            }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult( requestCode, permissions, grantResults );
+        switch (requestCode) {
+            case LOCATION_PERMS_REQUEST_CODE:
+                if(grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkForGPSnShowQibla();
+                } else {
+                       finish();
+                }
+                break;
+        }
+    }
 }

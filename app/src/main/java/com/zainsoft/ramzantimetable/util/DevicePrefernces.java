@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 
 import com.zainsoft.ramzantimetable.R;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 /**
  * Created by MB00354042 on 2/9/2017.
  */
@@ -88,5 +91,13 @@ public class DevicePrefernces {
     public void setSalahAlarm(boolean isSet) {
         editor.putBoolean(RAMZAN_ALARM, isSet);
         editor.commit();
+    }
+
+    public String getLatlongString() {
+        double lat = Double.parseDouble( sharedPref.getString( USER_LATITUDE, "0.0" ));
+        double lon = Double.parseDouble( sharedPref.getString( USER_LONGITUDE, "0.0" ));
+        DecimalFormat df = new DecimalFormat("#.###");
+        df.setRoundingMode( RoundingMode.CEILING);
+        return "(" + df.format(lat) + "," + df.format(lon) + ")";
     }
 }

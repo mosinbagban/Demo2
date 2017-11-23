@@ -6,28 +6,62 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.zainsoft.ramzantimetable.SalahCalenderActivity"
     tools:showIn="@layout/activity_salah_calender">
 
-
     <LinearLayout
-        android:id="@+id/lnrTime"
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/lnrcal"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-
             android:background="@color/textHeading">
 
+            <LinearLayout
+                android:id="@+id/lnrLocation"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:orientation="horizontal"
+                android:layout_gravity="center"
+                android:weightSum="1">
 
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@mipmap/ic_launcher"/>
+
+                <TextView
+                    style="@style/MyTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/location"/>
+
+                <TextView
+                    android:id="@+id/txtLocation"
+                    style="@style/MyTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.90"/>
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/powerby"
+                    android:textSize="10sp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/textHeading">
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight=".15"
@@ -87,19 +121,23 @@
                 style="@style/CalenderHeaderTextStyle"
                 android:text="Isha"
                 android:id="@+id/textIsha"/>
-
         </LinearLayout>
+        </LinearLayout>
+
         <ListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:id="@+id/listSalahTimeCalender"
             />
+
+
         <ImageView
             android:id="@+id/lnrimage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             />
+
     </LinearLayout>
 
 </LinearLayout>

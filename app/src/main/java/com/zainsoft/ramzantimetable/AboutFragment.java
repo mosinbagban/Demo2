@@ -69,8 +69,8 @@ public class AboutFragment extends Fragment {
 	public void emailMe() {
 		Intent email = new Intent( Intent.ACTION_SEND);
 		email.putExtra( Intent.EXTRA_EMAIL, new String[]{getString(R.string.email)});
-		email.putExtra( Intent.EXTRA_SUBJECT, "Regarding Holyramzan application");
-		email.putExtra( Intent.EXTRA_TEXT, "I am using your Holyramzan application.");
+		email.putExtra( Intent.EXTRA_SUBJECT, "Regarding Salah Time application");
+		email.putExtra( Intent.EXTRA_TEXT, "I am using your Salah Time application.");
 		email.setType("message/rfc822");
 		startActivity( Intent.createChooser(email, "Choose an Email client :"));
 	}

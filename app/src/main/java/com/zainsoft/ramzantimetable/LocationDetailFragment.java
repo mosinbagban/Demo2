@@ -410,12 +410,15 @@ public class LocationDetailFragment extends Fragment implements GoogleApiClient.
             } else {
                 lnrRamzan.setVisibility( View.GONE );
             }
+        } else {
+            txtCity.setText( pref.getLatlongString() );
         }
     }
 
     private void getRamzanTime() {
         int tDate = Utility.getRamZanDate();
         if(tDate != -1) {
+            lnrRamzan.setVisibility( View.VISIBLE );
             String localDate [] =  getResources().getStringArray(R.array.ramzan_date);
             txtSaher.setText(Constants.SAHERI_TIME[tDate] + " am");
             txtIftar.setText(Constants.IFTAR_TIME[tDate] + " pm");

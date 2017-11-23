@@ -1,6 +1,5 @@
 package com.zainsoft.ramzantimetable;
 
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -9,31 +8,20 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.zainsoft.ramzantimetable.util.Utility;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -124,11 +112,12 @@ public class SalahTimeActivity extends AppCompatActivity
         int id = item.getItemId();
         Log.d( TAG, "Options clicked..." );
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+
+/*        if (id == R.id.action_settings) {
             Intent intent = new Intent( getApplicationContext(), SettingsActivity.class );
             startActivity( intent );
             return true;
-        }else if (id == R.id.action_share) {
+        }else*/ if (id == R.id.action_share) {
             if(lfrg.MSG_SHARING_STR != null) {
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);

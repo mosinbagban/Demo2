@@ -256,7 +256,7 @@ public class SalahCalenderActivity extends AppCompatActivity {
             Bitmap bmp = bmps.get(i);
             bigcanvas.drawBitmap(bmp, 0, iHeight, paint);
             iHeight += bmp.getHeight();
-            bmp.recycle();
+           // bmp.recycle();
             bmp = null;
         }
         return bbitmap;
